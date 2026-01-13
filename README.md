@@ -69,11 +69,11 @@ This is a **frontend-only** project designed to demonstrate real-world fundament
 ## 🧩 Project Structure
 
 trackly/
-index.html
-styles.css
-script.js
-assets/
-README.md
+<br>index.html
+<br>styles.css
+<br>script.js
+<br>assets/
+<br>README.md
 
 
 ---
