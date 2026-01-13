@@ -1,0 +1,778 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Trackly — Job Application Tracker (Frontend Demo)</title>
+    <meta
+      name="description"
+      content="Trackly is a premium, accessible job application tracker built with semantic HTML, Tailwind CSS, and vanilla JavaScript."
+    />
+
+    <!-- Tailwind Play CDN (great for demos; for production you’d compile) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Optional: Tailwind config for small theme tweaks (still beginner-friendly) -->
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            boxShadow: {
+              soft: "0 20px 60px rgba(0,0,0,.08)",
+            },
+          },
+        },
+      };
+    </script>
+
+    <!-- Your small custom CSS polish (we’ll build this next) -->
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+
+  <body class="min-h-screen bg-white text-slate-900 antialiased">
+    <!-- Skip link: keyboard users can jump past nav -->
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-xl focus:bg-slate-900 focus:px-4 focus:py-3 focus:text-white focus:shadow-soft"
+    >
+      Skip to content
+    </a>
+
+    <!-- Sticky Navbar -->
+    <header class="sticky top-0 z-50 border-b border-slate-200/70 bg-white/80 backdrop-blur">
+      <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
+        <a href="#top" class="group inline-flex items-center gap-2">
+          <span
+            class="grid h-9 w-9 place-items-center rounded-xl border border-slate-200 bg-white shadow-sm"
+            aria-hidden="true"
+          >
+            <!-- tiny “logo” mark -->
+            <span class="h-3 w-3 rounded-full bg-slate-900"></span>
+          </span>
+          <div class="leading-tight">
+            <p class="text-sm font-semibold tracking-tight">Trackly</p>
+            <p class="text-xs text-slate-500">Job Application Tracker</p>
+          </div>
+        </a>
+
+        <nav aria-label="Primary" class="hidden items-center gap-1 md:flex">
+          <!-- data-section is used by scroll-spy JS -->
+          <a
+            class="nav-link rounded-lg px-3 py-2 text-sm font-medium text-slate-600 outline-none hover:text-slate-900 focus-visible:ring-2 focus-visible:ring-slate-900/20"
+            href="#features"
+            data-section="features"
+          >
+            Features
+          </a>
+          <a
+            class="nav-link rounded-lg px-3 py-2 text-sm font-medium text-slate-600 outline-none hover:text-slate-900 focus-visible:ring-2 focus-visible:ring-slate-900/20"
+            href="#demo"
+            data-section="demo"
+          >
+            Demo
+          </a>
+          <a
+            class="nav-link rounded-lg px-3 py-2 text-sm font-medium text-slate-600 outline-none hover:text-slate-900 focus-visible:ring-2 focus-visible:ring-slate-900/20"
+            href="#proof"
+            data-section="proof"
+          >
+            Proof
+          </a>
+          <a
+            class="nav-link rounded-lg px-3 py-2 text-sm font-medium text-slate-600 outline-none hover:text-slate-900 focus-visible:ring-2 focus-visible:ring-slate-900/20"
+            href="#faq"
+            data-section="faq"
+          >
+            FAQ
+          </a>
+        </nav>
+
+        <div class="flex items-center gap-2">
+          <!-- Preference toggle (saved in localStorage via JS) -->
+          <button
+            id="compactToggle"
+            type="button"
+            class="hidden rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900/20 sm:inline-flex"
+            aria-pressed="false"
+            title="Toggle compact view"
+          >
+            Compact
+          </button>
+
+          <button
+            id="openAboutModal"
+            type="button"
+            class="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900/20"
+          >
+            About
+          </button>
+
+          <a
+            href="#demo"
+            class="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900/30"
+          >
+            Open Tracker
+          </a>
+
+          <!-- Mobile menu button (optional enhancement later) -->
+          <button
+            id="mobileMenuBtn"
+            type="button"
+            class="ml-1 inline-flex rounded-xl border border-slate-200 bg-white p-2 text-slate-700 shadow-sm hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900/20 md:hidden"
+            aria-expanded="false"
+            aria-controls="mobileMenu"
+          >
+            <span class="sr-only">Open menu</span>
+            <!-- simple icon -->
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile menu (hidden by default; JS toggles) -->
+      <div id="mobileMenu" class="hidden border-t border-slate-200/70 bg-white md:hidden">
+        <div class="mx-auto max-w-6xl px-4 py-3 sm:px-6">
+          <div class="flex flex-col gap-1">
+            <a class="rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50" href="#features">
+              Features
+            </a>
+            <a class="rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50" href="#demo">
+              Demo
+            </a>
+            <a class="rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50" href="#proof">
+              Proof
+            </a>
+            <a class="rounded-lg px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50" href="#faq">
+              FAQ
+            </a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main id="main">
+      <!-- HERO -->
+      <section id="top" class="relative overflow-hidden">
+        <div class="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-16">
+          <div class="grid items-center gap-10 lg:grid-cols-2">
+            <div>
+              <p class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-700 shadow-sm">
+                <span class="h-1.5 w-1.5 rounded-full bg-emerald-500" aria-hidden="true"></span>
+                LocalStorage • Accessible • Responsive
+              </p>
+
+              <h1 class="mt-4 text-4xl font-semibold tracking-tight text-slate-900 sm:text-5xl">
+                A premium job application tracker
+                <span class="block text-slate-500">built with real-world frontend fundamentals.</span>
+              </h1>
+
+              <p class="mt-4 max-w-xl text-base leading-relaxed text-slate-600">
+                Track roles, update statuses, and stay consistent — with clean UX states, keyboard support, and fast client-side performance.
+              </p>
+
+              <div class="mt-6 flex flex-wrap items-center gap-3">
+                <a
+                  href="#demo"
+                  class="rounded-xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white shadow-soft hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900/30"
+                >
+                  Try the Tracker
+                </a>
+                <a
+                  href="#features"
+                  class="rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-800 shadow-sm hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900/20"
+                >
+                  See Features
+                </a>
+                <button
+                  id="openKeyboardHelp"
+                  type="button"
+                  class="rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-800 shadow-sm hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900/20"
+                >
+                  Keyboard shortcuts
+                </button>
+              </div>
+
+              <dl class="mt-8 grid grid-cols-3 gap-3 max-w-lg">
+                <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                  <dt class="text-xs font-semibold text-slate-500">CRUD</dt>
+                  <dd class="mt-1 text-sm font-semibold">Add/Edit/Delete</dd>
+                </div>
+                <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                  <dt class="text-xs font-semibold text-slate-500">UX States</dt>
+                  <dd class="mt-1 text-sm font-semibold">Empty / Errors</dd>
+                </div>
+                <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                  <dt class="text-xs font-semibold text-slate-500">A11y</dt>
+                  <dd class="mt-1 text-sm font-semibold">Focus + ARIA</dd>
+                </div>
+              </dl>
+            </div>
+
+            <!-- “Product” panel -->
+            <div class="relative">
+              <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-soft">
+                <div class="flex items-center justify-between">
+                  <p class="text-sm font-semibold text-slate-900">Weekly Momentum</p>
+                  <span class="rounded-full bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-700">Demo Data</span>
+                </div>
+
+                <div class="mt-4 space-y-3">
+                  <div class="rounded-2xl border border-slate-200 bg-white p-4">
+                    <p class="text-xs font-semibold text-slate-500">Pipeline</p>
+                    <div class="mt-2 h-2 w-full rounded-full bg-slate-100">
+                      <div class="h-2 w-[62%] rounded-full bg-slate-900" aria-hidden="true"></div>
+                    </div>
+                    <p class="mt-2 text-sm text-slate-600">
+                      <span class="font-semibold text-slate-900">8</span> active •
+                      <span class="font-semibold text-slate-900">3</span> interviews •
+                      <span class="font-semibold text-slate-900">1</span> offer
+                    </p>
+                  </div>
+
+                  <div class="grid gap-3 sm:grid-cols-2">
+                    <div class="rounded-2xl border border-slate-200 bg-white p-4">
+                      <p class="text-xs font-semibold text-slate-500">Best action</p>
+                      <p class="mt-1 text-sm font-semibold">Follow up today</p>
+                      <p class="mt-1 text-sm text-slate-600">2 applications need a response.</p>
+                    </div>
+                    <div class="rounded-2xl border border-slate-200 bg-white p-4">
+                      <p class="text-xs font-semibold text-slate-500">Streak</p>
+                      <p class="mt-1 text-sm font-semibold">4 weeks</p>
+                      <p class="mt-1 text-sm text-slate-600">Consistent applying wins.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <p class="mt-3 text-xs text-slate-500">
+                Built to demonstrate real frontend engineering fundamentals — not a template.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FEATURES -->
+      <section id="features" class="border-t border-slate-200/70 bg-slate-50">
+        <div class="mx-auto max-w-6xl px-4 py-14 sm:px-6">
+          <div class="max-w-2xl">
+            <h2 class="text-2xl font-semibold tracking-tight">Features that recruiters actually care about</h2>
+            <p class="mt-2 text-slate-600">
+              Every interaction is intentional: accessibility, clean state handling, and practical UI patterns.
+            </p>
+          </div>
+
+          <div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <article class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+              <h3 class="text-sm font-semibold">Scroll-spy navbar</h3>
+              <p class="mt-2 text-sm text-slate-600">Active section highlight + smooth navigation that works with keyboard users.</p>
+            </article>
+
+            <article class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+              <h3 class="text-sm font-semibold">Accessible modal</h3>
+              <p class="mt-2 text-sm text-slate-600">ESC to close, focus trap, and proper ARIA — implemented in vanilla JS.</p>
+            </article>
+
+            <article class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+              <h3 class="text-sm font-semibold">Client-side search/filter/sort</h3>
+              <p class="mt-2 text-sm text-slate-600">Fast interactions without any frameworks, with clear empty/error states.</p>
+            </article>
+
+            <article class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+              <h3 class="text-sm font-semibold">FAQ accordion</h3>
+              <p class="mt-2 text-sm text-slate-600">Keyboard friendly toggles with aria-expanded and clean animation.</p>
+            </article>
+
+            <article class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+              <h3 class="text-sm font-semibold">Helpful form validation</h3>
+              <p class="mt-2 text-sm text-slate-600">Real-time messages, not generic “invalid input”.</p>
+            </article>
+
+            <article class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+              <h3 class="text-sm font-semibold">LocalStorage persistence</h3>
+              <p class="mt-2 text-sm text-slate-600">Your applications + UI preference survive refresh. Practical and real.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- DEMO APP -->
+      <section id="demo" class="border-t border-slate-200/70 bg-white">
+        <div class="mx-auto max-w-6xl px-4 py-14 sm:px-6">
+          <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+            <div class="max-w-2xl">
+              <h2 class="text-2xl font-semibold tracking-tight">Live demo: Track applications</h2>
+              <p class="mt-2 text-slate-600">
+                Add a role, update status, and filter your pipeline. Everything saves automatically.
+              </p>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2">
+              <button
+                id="seedDemoData"
+                type="button"
+                class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900/20"
+              >
+                Load demo data
+              </button>
+              <button
+                id="clearAll"
+                type="button"
+                class="rounded-xl border border-rose-200 bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-700 shadow-sm hover:bg-rose-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500/20"
+              >
+                Clear all
+              </button>
+            </div>
+          </div>
+
+          <!-- Summary -->
+          <div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4" aria-label="Pipeline summary">
+            <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+              <p class="text-xs font-semibold text-slate-500">Total</p>
+              <p id="statTotal" class="mt-1 text-2xl font-semibold">0</p>
+            </div>
+            <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+              <p class="text-xs font-semibold text-slate-500">Applied</p>
+              <p id="statApplied" class="mt-1 text-2xl font-semibold">0</p>
+            </div>
+            <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+              <p class="text-xs font-semibold text-slate-500">Interview</p>
+              <p id="statInterview" class="mt-1 text-2xl font-semibold">0</p>
+            </div>
+            <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+              <p class="text-xs font-semibold text-slate-500">Offer</p>
+              <p id="statOffer" class="mt-1 text-2xl font-semibold">0</p>
+            </div>
+          </div>
+
+          <div class="mt-8 grid gap-6 lg:grid-cols-5">
+            <!-- Add Form -->
+            <section class="lg:col-span-2">
+              <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+                <div class="flex items-center justify-between">
+                  <h3 class="text-sm font-semibold">Add application</h3>
+                  <p class="text-xs text-slate-500">Fields marked * are required</p>
+                </div>
+
+                <form id="appForm" class="mt-4 space-y-4" novalidate>
+                  <!-- Live region for form errors/success messages -->
+                  <p id="formStatus" class="sr-only" role="status" aria-live="polite"></p>
+
+                  <div>
+                    <label class="text-sm font-semibold" for="company">Company *</label>
+                    <input
+                      id="company"
+                      name="company"
+                      type="text"
+                      autocomplete="organization"
+                      class="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm outline-none focus:border-slate-300 focus:ring-2 focus:ring-slate-900/10"
+                      placeholder="e.g., Canva"
+                      required
+                      minlength="2"
+                    />
+                    <p class="mt-2 text-sm text-rose-700 hidden" data-error-for="company"></p>
+                  </div>
+
+                  <div>
+                    <label class="text-sm font-semibold" for="role">Role title *</label>
+                    <input
+                      id="role"
+                      name="role"
+                      type="text"
+                      autocomplete="off"
+                      class="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm outline-none focus:border-slate-300 focus:ring-2 focus:ring-slate-900/10"
+                      placeholder="e.g., Junior Frontend Developer"
+                      required
+                      minlength="2"
+                    />
+                    <p class="mt-2 text-sm text-rose-700 hidden" data-error-for="role"></p>
+                  </div>
+
+                  <div class="grid gap-4 sm:grid-cols-2">
+                    <div>
+                      <label class="text-sm font-semibold" for="status">Status *</label>
+                      <select
+                        id="status"
+                        name="status"
+                        class="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm outline-none focus:border-slate-300 focus:ring-2 focus:ring-slate-900/10"
+                        required
+                      >
+                        <option value="">Select…</option>
+                        <option value="applied">Applied</option>
+                        <option value="interview">Interview</option>
+                        <option value="offer">Offer</option>
+                        <option value="rejected">Rejected</option>
+                      </select>
+                      <p class="mt-2 text-sm text-rose-700 hidden" data-error-for="status"></p>
+                    </div>
+
+                    <div>
+                      <label class="text-sm font-semibold" for="date">Applied date</label>
+                      <input
+                        id="date"
+                        name="date"
+                        type="date"
+                        class="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm outline-none focus:border-slate-300 focus:ring-2 focus:ring-slate-900/10"
+                      />
+                      <p class="mt-2 text-xs text-slate-500">Optional, but helpful for sorting.</p>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label class="text-sm font-semibold" for="link">Job link</label>
+                    <input
+                      id="link"
+                      name="link"
+                      type="url"
+                      class="mt-2 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm outline-none focus:border-slate-300 focus:ring-2 focus:ring-slate-900/10"
+                      placeholder="https://…"
+                    />
+                    <p class="mt-2 text-sm text-rose-700 hidden" data-error-for="link"></p>
+                  </div>
+
+                  <div>
+                    <label class="text-sm font-semibold" for="notes">Notes</label>
+                    <textarea
+                      id="notes"
+                      name="notes"
+                      rows="3"
+                      class="mt-2 w-full resize-y rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm outline-none focus:border-slate-300 focus:ring-2 focus:ring-slate-900/10"
+                      placeholder="e.g., Follow up next Monday"
+                    ></textarea>
+                  </div>
+
+                  <!-- When editing, JS will set a hidden id value -->
+                  <input id="editId" name="editId" type="hidden" value="" />
+
+                  <div class="flex flex-wrap items-center gap-2 pt-2">
+                    <button
+                      id="submitBtn"
+                      type="submit"
+                      class="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900/30"
+                    >
+                      Add application
+                    </button>
+                    <button
+                      id="resetBtn"
+                      type="button"
+                      class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow-sm hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900/20"
+                    >
+                      Reset
+                    </button>
+                  </div>
+
+                  <p class="text-xs text-slate-500">
+                    Tip: Use the keyboard. Tab through fields, Enter to submit.
+                  </p>
+                </form>
+              </div>
+            </section>
+
+            <!-- List + Controls -->
+            <section class="lg:col-span-3">
+              <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                  <div>
+                    <h3 class="text-sm font-semibold">Your pipeline</h3>
+                    <p class="mt-1 text-sm text-slate-600">Search, filter, sort — all client-side.</p>
+                  </div>
+
+                  <div class="grid gap-2 sm:grid-cols-3">
+                    <div>
+                      <label for="search" class="sr-only">Search</label>
+                      <input
+                        id="search"
+                        type="search"
+                        class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm outline-none focus:border-slate-300 focus:ring-2 focus:ring-slate-900/10"
+                        placeholder="Search company or role…"
+                      />
+                    </div>
+
+                    <div>
+                      <label for="filter" class="sr-only">Filter by status</label>
+                      <select
+                        id="filter"
+                        class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm outline-none focus:border-slate-300 focus:ring-2 focus:ring-slate-900/10"
+                      >
+                        <option value="all">All statuses</option>
+                        <option value="applied">Applied</option>
+                        <option value="interview">Interview</option>
+                        <option value="offer">Offer</option>
+                        <option value="rejected">Rejected</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label for="sort" class="sr-only">Sort</label>
+                      <select
+                        id="sort"
+                        class="w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm shadow-sm outline-none focus:border-slate-300 focus:ring-2 focus:ring-slate-900/10"
+                      >
+                        <option value="newest">Newest first</option>
+                        <option value="oldest">Oldest first</option>
+                        <option value="company">Company A–Z</option>
+                        <option value="status">Status</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Results -->
+                <div class="mt-5">
+                  <p id="resultsMeta" class="text-sm text-slate-600"></p>
+
+                  <ul
+                    id="appList"
+                    class="mt-4 space-y-3"
+                    aria-label="Application list"
+                  >
+                    <!-- JS will render cards here -->
+                  </ul>
+
+                  <!-- Empty state -->
+                  <div
+                    id="emptyState"
+                    class="mt-6 hidden rounded-3xl border border-dashed border-slate-200 bg-slate-50 p-10 text-center"
+                  >
+                    <p class="text-sm font-semibold">No applications yet</p>
+                    <p class="mt-2 text-sm text-slate-600">
+                      Add your first role on the left — it’ll persist after refresh.
+                    </p>
+                  </div>
+                </div>
+
+                <p class="mt-6 text-xs text-slate-500">
+                  Accessibility note: action buttons include visible focus rings and readable labels.
+                </p>
+              </div>
+            </section>
+          </div>
+        </div>
+      </section>
+
+      <!-- PROOF -->
+      <section id="proof" class="border-t border-slate-200/70 bg-slate-50">
+        <div class="mx-auto max-w-6xl px-4 py-14 sm:px-6">
+          <div class="max-w-2xl">
+            <h2 class="text-2xl font-semibold tracking-tight">Proof it’s built like a real product</h2>
+            <p class="mt-2 text-slate-600">
+              Thoughtful details: clear hierarchy, predictable interactions, and safe persistence.
+            </p>
+          </div>
+
+          <div class="mt-8 grid gap-4 lg:grid-cols-3">
+            <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+              <p class="text-xs font-semibold text-slate-500">Performance</p>
+              <p class="mt-2 text-sm text-slate-700">No heavy libraries. UI updates are minimal and fast.</p>
+            </div>
+            <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+              <p class="text-xs font-semibold text-slate-500">Accessibility</p>
+              <p class="mt-2 text-sm text-slate-700">Keyboard-first patterns: skip link, focus-visible, ARIA only where needed.</p>
+            </div>
+            <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+              <p class="text-xs font-semibold text-slate-500">Engineering</p>
+              <p class="mt-2 text-sm text-slate-700">Clean functions, event delegation, and localStorage persistence.</p>
+            </div>
+          </div>
+
+          <div class="mt-8 grid gap-4 lg:grid-cols-3">
+            <figure class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+              <blockquote class="text-sm text-slate-700">
+                “This feels like a real internal tool — clean, fast, and easy to scan.”
+              </blockquote>
+              <figcaption class="mt-3 text-xs font-semibold text-slate-500">Hiring Manager (sample feedback)</figcaption>
+            </figure>
+            <figure class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+              <blockquote class="text-sm text-slate-700">
+                “The keyboard support + error handling shows maturity beyond ‘toy projects’.”
+              </blockquote>
+              <figcaption class="mt-3 text-xs font-semibold text-slate-500">Senior Frontend Engineer (sample feedback)</figcaption>
+            </figure>
+            <figure class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+              <blockquote class="text-sm text-slate-700">
+                “Great fundamentals: semantic HTML, clear states, and maintainable JS.”
+              </blockquote>
+              <figcaption class="mt-3 text-xs font-semibold text-slate-500">Recruiter (sample feedback)</figcaption>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <!-- FAQ -->
+      <section id="faq" class="border-t border-slate-200/70 bg-white">
+        <div class="mx-auto max-w-6xl px-4 py-14 sm:px-6">
+          <div class="max-w-2xl">
+            <h2 class="text-2xl font-semibold tracking-tight">FAQ</h2>
+            <p class="mt-2 text-slate-600">Short answers. No fluff.</p>
+          </div>
+
+          <div class="mt-8 space-y-3">
+            <!-- Accordion item -->
+            <div class="rounded-2xl border border-slate-200 bg-white">
+              <h3>
+                <button
+                  class="faq-btn flex w-full items-center justify-between gap-4 px-5 py-4 text-left text-sm font-semibold outline-none focus-visible:ring-2 focus-visible:ring-slate-900/20"
+                  aria-expanded="false"
+                >
+                  Why vanilla JS instead of a framework?
+                  <span class="text-slate-400" aria-hidden="true">+</span>
+                </button>
+              </h3>
+              <div class="faq-panel hidden px-5 pb-5 text-sm text-slate-600">
+                Because junior hiring often tests fundamentals first: DOM, events, state, and accessibility.
+              </div>
+            </div>
+
+            <div class="rounded-2xl border border-slate-200 bg-white">
+              <h3>
+                <button
+                  class="faq-btn flex w-full items-center justify-between gap-4 px-5 py-4 text-left text-sm font-semibold outline-none focus-visible:ring-2 focus-visible:ring-slate-900/20"
+                  aria-expanded="false"
+                >
+                  Where is data stored?
+                  <span class="text-slate-400" aria-hidden="true">+</span>
+                </button>
+              </h3>
+              <div class="faq-panel hidden px-5 pb-5 text-sm text-slate-600">
+                In your browser via localStorage — no backend needed for this demo.
+              </div>
+            </div>
+
+            <div class="rounded-2xl border border-slate-200 bg-white">
+              <h3>
+                <button
+                  class="faq-btn flex w-full items-center justify-between gap-4 px-5 py-4 text-left text-sm font-semibold outline-none focus-visible:ring-2 focus-visible:ring-slate-900/20"
+                  aria-expanded="false"
+                >
+                  Is the modal accessible?
+                  <span class="text-slate-400" aria-hidden="true">+</span>
+                </button>
+              </h3>
+              <div class="faq-panel hidden px-5 pb-5 text-sm text-slate-600">
+                Yes — focus trap, ESC close, and focus return to the trigger button.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CTA -->
+      <section class="border-t border-slate-200/70 bg-slate-50">
+        <div class="mx-auto max-w-6xl px-4 py-14 sm:px-6">
+          <div class="rounded-3xl border border-slate-200 bg-white p-8 shadow-soft sm:p-10">
+            <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div class="max-w-2xl">
+                <h2 class="text-2xl font-semibold tracking-tight">Want to see the engineering details?</h2>
+                <p class="mt-2 text-slate-600">
+                  Open the About modal to view what this project demonstrates (a11y, performance, and clean JS).
+                </p>
+              </div>
+              <div class="flex gap-2">
+                <button
+                  id="openAboutModal2"
+                  type="button"
+                  class="rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-800 shadow-sm hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900/20"
+                >
+                  Open About
+                </button>
+                <a
+                  href="#demo"
+                  class="rounded-xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white shadow-sm hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900/30"
+                >
+                  Use Tracker
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-slate-200/70 bg-white">
+      <div class="mx-auto max-w-6xl px-4 py-10 sm:px-6">
+        <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <p class="text-sm font-semibold">Trackly</p>
+          <p class="text-sm text-slate-600">
+            Built with HTML + Tailwind + Vanilla JS • Portfolio demo
+          </p>
+        </div>
+        <p class="mt-3 text-xs text-slate-500">
+          Tip: recruiters love projects that are interactive, accessible, and explainable.
+        </p>
+      </div>
+    </footer>
+
+    <!-- MODAL (About + Keyboard Shortcuts) -->
+    <!-- Hidden by default; JS will manage open/close, ESC, focus trap -->
+    <div
+      id="modalOverlay"
+      class="fixed inset-0 z-[60] hidden items-center justify-center bg-black/40 p-4"
+      aria-hidden="true"
+    >
+      <div
+        id="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modalTitle"
+        class="w-full max-w-xl rounded-3xl border border-slate-200 bg-white p-6 shadow-soft outline-none"
+        tabindex="-1"
+      >
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <h2 id="modalTitle" class="text-lg font-semibold">About this project</h2>
+            <p id="modalDesc" class="mt-1 text-sm text-slate-600">
+              A premium frontend demo designed for junior hiring signals.
+            </p>
+          </div>
+
+          <button
+            id="closeModal"
+            type="button"
+            class="rounded-xl border border-slate-200 bg-white p-2 text-slate-700 shadow-sm hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900/20"
+          >
+            <span class="sr-only">Close modal</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="mt-5 space-y-4 text-sm text-slate-700">
+          <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+            <p class="font-semibold">What it demonstrates</p>
+            <ul class="mt-2 list-disc space-y-1 pl-5 text-slate-600">
+              <li>Semantic structure, clean hierarchy, and responsive layout</li>
+              <li>Accessible UI patterns: focus-visible, keyboard navigation, ARIA only when needed</li>
+              <li>State handling: empty states, error messages, safe persistence</li>
+              <li>Vanilla JS fundamentals: DOM updates, events, localStorage</li>
+            </ul>
+          </div>
+
+          <div class="rounded-2xl border border-slate-200 bg-white p-4">
+            <p class="font-semibold">Keyboard shortcuts</p>
+            <ul class="mt-2 space-y-1 text-slate-600">
+              <li><span class="font-semibold text-slate-900">ESC</span> — close modal</li>
+              <li><span class="font-semibold text-slate-900">Tab</span> — move through interactive elements</li>
+              <li><span class="font-semibold text-slate-900">Enter</span> — activate buttons/submit form</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="mt-6 flex flex-wrap items-center justify-end gap-2">
+          <button
+            id="modalPrimary"
+            type="button"
+            class="rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:opacity-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900/30"
+          >
+            Got it
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
